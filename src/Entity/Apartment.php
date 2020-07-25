@@ -31,6 +31,11 @@ class Apartment
     private int $slots;
 
     /**
+     * @ORM\Column(type="float")
+     */
+    private float $price;
+
+    /**
      * @ORM\OneToMany(targetEntity=Reservation::class, mappedBy="apartment")
      */
     private $reservations;
@@ -63,6 +68,16 @@ class Apartment
     public function setSlots(int $slots): void
     {
         $this->slots = $slots;
+    }
+
+    public function getPrice(): ?float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(float $price): void
+    {
+        $this->price = $price;
     }
 
     /**
