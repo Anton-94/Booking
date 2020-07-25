@@ -1,0 +1,107 @@
+version: '3'
+
+services:
+
+  ## DATABASE
+
+  mysql:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./docker/data/mariadb:/var/lib/mysql
+      - ./docker/logs/mariadb:/var/log/mysql
+    restart: always
+    ports:
+      - 33005:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: app_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    networks:
+      - symfony
+
+## APPLICATION SERVER
+
+  php-fpm:
+    build:
+      context: ./docker/containers/php-fpm
+      args:
+        USER_ID: ${UID-1000}
+        GROUP_ID: ${GID-1000}
+    volumes:
+      - ./:/var/www/html
+      - ./docker/logs/php-fpm/:/var/log/php-fpm
+    depends_on:
+      - mysql
+    networks:
+      - symfony
+
+  nginx:
+    build:
+      context: ./docker/containers/nginx
+      args:
+        USER_ID: ${UID-1000}
+        GROUP_ID: ${GID-1000}
+    volumes:
+      - ./:/var/www/html
+      - ./docker/logs/nginx/:/var/log/nginx
+    restart: always
+    ports:
+      - "8005:80"
+    networks:
+      - symfony
+    depends_on:
+      - php-fpm
+    links:
+      - mysql
+      - php-fpm
+
+  php-cli:
+    build:
+      context: ./docker/containers/php-cli
+      args:
+        USER_ID: ${UID-1000}
+        GROUP_ID: ${GID-1000}
+    volumes:
+      - ./:/var/www/html
+    command: sleep 10000
+    networks:
+      - symfony
+    links:
+      - mysql
+
+  pma:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=mysql
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+    ports:
+      - 9005:80
+    networks:
+      - symfony
+    links:
+      - mysql
+
+  encore:
+    build:
+      context: ./docker/containers/encore
+      args:
+        USER_ID: ${UID-1000}
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - symfony
+
+  mailer:
+    image: 'mailhog/mailhog'
+    ports:
+      - "8006:8025"
+      - "1025:1025"
+    networks:
+      - symfony
+
+networks:
+  symfony:
+    driver: bridge
