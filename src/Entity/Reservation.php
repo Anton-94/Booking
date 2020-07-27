@@ -19,12 +19,6 @@ class Reservation
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="reservations")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private User $user;
-
-    /**
      * @ORM\ManyToOne(targetEntity=Apartment::class, inversedBy="reservations")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -45,19 +39,14 @@ class Reservation
      */
     private int $guests;
 
+    /**
+     * @ORM\Column(type="float")
+     */
+    private float $price;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(User $user): void
-    {
-        $this->user = $user;
     }
 
     public function getApartment(): ?Apartment
@@ -98,5 +87,15 @@ class Reservation
     public function setGuests(int $guests): void
     {
         $this->guests = $guests;
+    }
+
+    public function getPrice(): float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(float $price): void
+    {
+        $this->price = $price;
     }
 }
