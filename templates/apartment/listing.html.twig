@@ -13,6 +13,8 @@
                     <a href="{{ path('apartment_reservation', {'id': apartment.id}) }}" class="btn btn-primary reservation">Reservation</a>
                 </div>
             </div>
+        {% else %}
+            <p>No results</p>
         {% endfor %}
     </div>
 {% endblock %}
