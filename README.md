@@ -14,7 +14,11 @@
 6. Install fake data:
     
         bin/console doctrine:fixtures:load
+        
+7. Now you need to install encore and build assets. 
+Run `docker-compose run encore bash` command for enter to `encore` container.
+Install node modules `yarn install` and build assets `yarn encore dev`.
       
 That's all.
 
-Now you can launch the app at this `http//:localhost:8005` address
+You can launch the app at this `http//:localhost:8005` address
