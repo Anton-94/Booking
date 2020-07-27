@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <h2 class="text-center">Find your apartment</h2>
+
+    <div class="search__form">
+        {{ form_start(form) }}
+            <div class="form-row">
+                <div class="col-11">
+                    <div class="col">
+                        {{ form_row(form.startDate) }}
+                    </div>
+                    <div class="col">
+                        {{ form_row(form.endDate) }}
+                    </div>
+                    <div class="col">
+                        {{ form_row(form.apartmentType) }}
+                    </div>
+                    <div class="col">
+                        {{ form_row(form.guests) }}
+                    </div>
+                </div>
+                <div class="col-1">
+                    <button type="submit" class="btn btn-success">Search</button>
+                </div>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

@@ -1,0 +1,10 @@
+general:
+  back: 'Back to filter'
+
+apartment:
+  flat: 'Flat'
+  bed: 'Bed'
+
+flushMessage:
+  success: 'Reservation success'
+  error: 'Reservation error'
