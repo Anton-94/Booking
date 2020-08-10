@@ -2,6 +2,7 @@
 
 namespace App\Twig;
 
+use App\DTO\ApartmentFilter;
 use App\Enum\ApartmentEnum;
 use App\Service\ApartmentService;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -28,9 +29,10 @@ class ApartmentExtension extends AbstractExtension
 
     public function calculatePrice(float $price, int $slots)
     {
+        /** @var ApartmentFilter $reservationData */
         $reservationData = $this->session->get('reservationData');
-        $guests = ApartmentEnum::isFlat($reservationData['apartmentType']) ? $slots : $reservationData['guests'];
+        $guests = ApartmentEnum::isFlat($reservationData->getApartmentType()) ? $slots : $reservationData->getGuests();
 
-        return $this->apartmentService->calculatePrice($price, $guests, $reservationData['startDate'], $reservationData['endDate']);
+        return $this->apartmentService->calculatePrice($price, $guests, $reservationData->getStartDate(), $reservationData->getEndDate());
     }
 }

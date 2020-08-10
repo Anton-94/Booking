@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\DiscountUtil;
+use App\DTO\ApartmentFilter;
 use App\Repository\ApartmentRepository;
 
 class ApartmentService
@@ -14,9 +15,9 @@ class ApartmentService
         $this->repository = $repository;
     }
 
-    public function findApartmentsByParams(array $params): array
+    public function findApartmentsByParams(ApartmentFilter $searchApartment): array
     {
-        return $this->repository->findApartmentsByParams($params);
+        return $this->repository->findApartmentsByParams($searchApartment);
     }
 
     public function calculatePrice(float $price, int $guests, \DateTimeInterface $startDate, \DateTimeInterface $endDate): float

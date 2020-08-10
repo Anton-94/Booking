@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\DTO\ApartmentFilter;
 use App\Entity\Apartment;
 use App\Enum\ApartmentEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -20,7 +21,7 @@ class ApartmentRepository extends ServiceEntityRepository
         parent::__construct($registry, Apartment::class);
     }
 
-    public function findApartmentsByParams(array $params): array
+    public function findApartmentsByParams(ApartmentFilter $searchApartment): array
     {
         $qb = $this->_em->getConnection()->createQueryBuilder();
 
@@ -39,17 +40,17 @@ class ApartmentRepository extends ServiceEntityRepository
                 GROUP BY r.apartment_id
             )', 'r', 'r.apartment_id = a.id')
             ->where($qb->expr()->gt('a.slots', 'COALESCE(r.sumGuests, 0)'))
-            ->setParameter('startDate', $params['startDate']->format('Y-m-d'))
-            ->setParameter('endDate', $params['endDate']->format('Y-m-d'))
+            ->setParameter('startDate', $searchApartment->getStartDate()->format('Y-m-d'))
+            ->setParameter('endDate', $searchApartment->getStartDate()->format('Y-m-d'))
         ;
 
-        if(ApartmentEnum::isFlat($params['apartmentType'])) {
+        if(ApartmentEnum::isFlat($searchApartment->getApartmentType())) {
             $qb
                 ->andWhere($qb->expr()->gte('a.slots - COALESCE(r.sumGuests, 0)', 'a.slots'));
         } else {
             $qb
                 ->andWhere($qb->expr()->gte('a.slots - COALESCE(r.sumGuests, 0)', ':guests'))
-                ->setParameter('guests', $params['apartmentType'] == ApartmentEnum::FLAT ? 'a.slots' : $params['guests'])
+                ->setParameter('guests', $searchApartment->getApartmentType() == ApartmentEnum::FLAT ? 'a.slots' : $searchApartment->getGuests())
             ;
         }
 

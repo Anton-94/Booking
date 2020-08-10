@@ -3,9 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Apartment;
-use App\Entity\Reservation;
-use App\Enum\ApartmentEnum;
-use App\Service\ApartmentService;
+use App\Service\ReservationService;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,17 +16,17 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ApartmentController extends AbstractController
 {
-    private ApartmentService $apartmentService;
+    private ReservationService $reservationService;
     private SessionInterface $session;
     private LoggerInterface $logger;
 
     public function __construct(
-        ApartmentService $apartmentService,
+        ReservationService $reservationService,
         SessionInterface $session,
         LoggerInterface $logger
     )
     {
-        $this->apartmentService = $apartmentService;
+        $this->reservationService = $reservationService;
         $this->session = $session;
         $this->logger = $logger;
     }
@@ -40,23 +38,9 @@ class ApartmentController extends AbstractController
     public function reservation(Apartment $apartment): Response
     {
         $reservationData = $this->session->get('reservationData');
-        $guests = ApartmentEnum::isFlat($reservationData['apartmentType']) ? $apartment->getSlots() : $reservationData['guests'];
-        $startDate = $reservationData['startDate'];
-        $endDate = $reservationData['endDate'];
-
-        $price = $this->apartmentService->calculatePrice($apartment->getPrice(), $guests, $startDate, $endDate);
 
         try {
-            $reservation = new Reservation();
-            $reservation->setApartment($apartment);
-            $reservation->setStartDate($startDate);
-            $reservation->setEndDate($endDate);
-            $reservation->setGuests($guests);
-            $reservation->setPrice($price);
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($reservation);
-            $em->flush();
+            $this->reservationService->create($apartment, $reservationData);
 
             $this->addFlash('success', 'flushMessage.success');
         } catch (\Exception $e) {
